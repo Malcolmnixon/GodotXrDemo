@@ -5,7 +5,7 @@ animation = "IndexFinger"
 
 [sub_resource type="AnimationNodeBlend2" id=2]
 filter_enabled = true
-filters = [ "Armature_Left/Skeleton:index._distal", "Armature_Left/Skeleton:index._middle", "Armature_Left/Skeleton:index._proximal" ]
+filters = [ "Armature_Left/Skeleton:index_distal", "Armature_Left/Skeleton:index_middle", "Armature_Left/Skeleton:index_proximal" ]
 
 [sub_resource type="AnimationNodeAnimation" id=3]
 animation = "Grip"
@@ -35,4 +35,4 @@ nodes/SetGrip/position = Vector2( 360, 40 )
 nodes/SetIndex/node = SubResource( 7 )
 nodes/SetIndex/position = Vector2( 360, 240 )
 nodes/output/position = Vector2( 1020, 80 )
-node_connections = [ "output", 0, "Blend2", "SetIndex", 0, "Animation 2", "IndexTimeScale", 0, "SetIndex", "GripTimeScale", 0, "SetGrip", "Blend2", 0, "GripTimeScale", "Blend2", 1, "IndexTimeScale", "SetGrip", 0, "GripAnimation" ]
+node_connections = [ "output", 0, "Blend2", "SetGrip", 0, "GripAnimation", "SetIndex", 0, "Animation 2", "GripTimeScale", 0, "SetGrip", "Blend2", 0, "GripTimeScale", "Blend2", 1, "IndexTimeScale", "IndexTimeScale", 0, "SetIndex" ]
