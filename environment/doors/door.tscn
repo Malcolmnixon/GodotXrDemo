@@ -1,0 +1,109 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://addons/godot-xr-tools/objects/Triggered_area.gd" type="Script" id=1]
+[ext_resource path="res://environment/doors/door.gd" type="Script" id=2]
+[ext_resource path="res://environment/doors/door_creak.mp3" type="AudioStream" id=3]
+
+[sub_resource type="BoxShape" id=1]
+extents = Vector3( 0.5, 1.1, 0.03 )
+
+[sub_resource type="CubeMesh" id=2]
+size = Vector3( 1, 2.2, 0.06 )
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_color = Color( 0.443137, 0.27451, 0.27451, 1 )
+
+[sub_resource type="CubeMesh" id=4]
+size = Vector3( 0.1, 0.04, 0.13 )
+
+[sub_resource type="BoxShape" id=5]
+extents = Vector3( 0.1, 0.0412406, 0.0945894 )
+
+[sub_resource type="Animation" id=8]
+resource_name = "Close"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, -90, 0 ), Vector3( 0, 0, 0 ) ]
+}
+
+[sub_resource type="Animation" id=6]
+resource_name = "Open"
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ), Vector3( 0, -90, 0 ) ]
+}
+
+[sub_resource type="Animation" id=7]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 0,
+"values": [ Vector3( 0, 0, 0 ) ]
+}
+
+[node name="Door" type="Spatial"]
+
+[node name="Hinge" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0 )
+
+[node name="Door" type="KinematicBody" parent="Hinge"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1.1, 0 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Hinge/Door"]
+shape = SubResource( 1 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Hinge/Door"]
+mesh = SubResource( 2 )
+material/0 = SubResource( 3 )
+
+[node name="Handle" type="Spatial" parent="Hinge"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 1, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Hinge/Handle"]
+mesh = SubResource( 4 )
+material/0 = null
+
+[node name="Area" type="Area" parent="Hinge/Handle"]
+script = ExtResource( 1 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Hinge/Handle/Area"]
+shape = SubResource( 5 )
+
+[node name="DoorLogic" type="Node" parent="Hinge"]
+script = ExtResource( 2 )
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Hinge/DoorLogic"]
+root_node = NodePath("../..")
+anims/Close = SubResource( 8 )
+anims/Open = SubResource( 6 )
+anims/RESET = SubResource( 7 )
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Hinge/DoorLogic"]
+stream = ExtResource( 3 )
+
+[connection signal="triggered" from="Hinge/Handle/Area" to="Hinge/DoorLogic" method="_on_trigger_handle"]
+[connection signal="door_closing" from="Hinge/DoorLogic" to="Hinge/DoorLogic/AudioStreamPlayer3D" method="play"]
+[connection signal="door_opening" from="Hinge/DoorLogic" to="Hinge/DoorLogic/AudioStreamPlayer3D" method="play"]
